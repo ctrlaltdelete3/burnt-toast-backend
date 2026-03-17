@@ -1,6 +1,7 @@
 package com.example.burnttoast.service;
 
 import com.example.burnttoast.dto.RecipeDTO;
+import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.mapper.RecipeMapper;
 import com.example.burnttoast.model.Category;
 import com.example.burnttoast.model.Recipe;
@@ -33,7 +34,7 @@ public class RecipeService {
 
     public RecipeDTO create(Long categoryId, RecipeDTO recipeDTO) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
         Recipe recipe = toEntity(new Recipe(), recipeDTO);
         recipe.setCategory(category);
         Recipe createdRecipe = recipeRepository.save(recipe);
@@ -42,7 +43,7 @@ public class RecipeService {
 
     public RecipeDTO update(Long recipeId, RecipeDTO recipeDTO) {
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
         toEntity(recipe, recipeDTO);
         Recipe updatedRecipe = recipeRepository.save(recipe);
         return toDTO(updatedRecipe);

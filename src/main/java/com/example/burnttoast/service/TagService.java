@@ -1,6 +1,7 @@
 package com.example.burnttoast.service;
 
 import com.example.burnttoast.dto.TagDTO;
+import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.mapper.TagMapper;
 import com.example.burnttoast.model.Recipe;
 import com.example.burnttoast.model.Tag;
@@ -43,9 +44,9 @@ public class TagService {
 
     public void addTagToRecipe(Long recipeId, Long tagId) {
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found."));
         if (!recipe.getTags().contains(tag)){
             recipe.getTags().add(tag);
             recipeRepository.save(recipe);
@@ -54,9 +55,9 @@ public class TagService {
 
     public void removeTagFromRecipe(Long recipeId, Long tagId) {
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Recipe not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tag not found."));
         if(recipe.getTags().remove(tag)){
             recipeRepository.save(recipe);
         }
