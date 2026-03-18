@@ -5,6 +5,7 @@ import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.mapper.RecipeMapper;
 import com.example.burnttoast.model.Category;
 import com.example.burnttoast.model.Recipe;
+import com.example.burnttoast.model.RecipeStatus;
 import com.example.burnttoast.repository.CategoryRepository;
 import com.example.burnttoast.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,12 @@ public class RecipeService {
 
     public void delete(Long recipeId) {
         recipeRepository.deleteById(recipeId);
+    }
+
+    public List<RecipeDTO> search(String query, Long categoryId, RecipeStatus status, Long tagId) {
+        return recipeRepository.search(query, categoryId, status, tagId)
+                .stream()
+                .map(RecipeMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.example.burnttoast.controller;
 
 import com.example.burnttoast.dto.RecipeDTO;
+import com.example.burnttoast.model.RecipeStatus;
 import com.example.burnttoast.service.RecipeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,15 @@ public class RecipeController {
     {
         recipeService.delete(id);
         return  ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recipes/search")
+    public List<RecipeDTO> search(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false)RecipeStatus status,
+            @RequestParam(required = false) Long tagId
+            ){
+        return recipeService.search(query, categoryId, status, tagId);
     }
 }
