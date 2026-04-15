@@ -14,7 +14,9 @@ public class RecipeMapper {
         recipeDTO.setStatus(recipe.getStatus());
         recipeDTO.setCookingTime(recipe.getCookingTime());
         recipeDTO.setRating(recipe.getRating());
+        recipeDTO.setCreatedAt(recipe.getCreatedAt());
         recipeDTO.setTags(recipe.getTags().stream().map(TagMapper::toDTO).toList());
+        recipeDTO.setThumbnailUrl(recipe.getThumbnailUrl());
         return recipeDTO;
     }
 

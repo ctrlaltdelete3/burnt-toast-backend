@@ -9,7 +9,9 @@ import com.example.burnttoast.model.RecipeStatus;
 import com.example.burnttoast.repository.CategoryRepository;
 import com.example.burnttoast.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
+import org.jsoup.Jsoup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,8 @@ public class RecipeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
         Recipe recipe = toEntity(new Recipe(), recipeDTO);
         recipe.setCategory(category);
+        recipe.setCreatedAt(LocalDateTime.now());
+        recipe.setThumbnailUrl(fetchThumbnail(recipeDTO.getUrl()));
         Recipe createdRecipe = recipeRepository.save(recipe);
         return toDTO(createdRecipe);
     }
@@ -59,5 +63,21 @@ public class RecipeService {
                 .stream()
                 .map(RecipeMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    private String fetchThumbnail(String url){
+        if (url == null || url.isBlank())
+            return null;
+        try {
+            return Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0")
+                    .timeout(5000)
+                    .get()
+                    .select("meta[property=og:image]")
+                    .attr("content");
+
+        }catch(Exception e){
+            return null;
+        }
     }
 }

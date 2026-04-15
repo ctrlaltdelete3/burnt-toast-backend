@@ -3,6 +3,7 @@ package com.example.burnttoast.dto;
 import com.example.burnttoast.model.RecipeStatus;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,5 +17,7 @@ public class RecipeDTO {
     private RecipeStatus status;
     private Integer cookingTime;
     private Integer rating; // can be 1-5
+    private LocalDateTime createdAt;
+    private String thumbnailUrl;
     private List<TagDTO> tags = new ArrayList<>();
 }

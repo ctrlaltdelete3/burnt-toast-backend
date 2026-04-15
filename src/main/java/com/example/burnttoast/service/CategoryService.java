@@ -28,6 +28,7 @@ public class CategoryService {
         Category category = new Category();
         category.setName(categoryDTO.getName());
         category.setDescription(categoryDTO.getDescription());
+        category.setIconPath(categoryDTO.getIconPath());
         Category createdCategory = categoryRepository.save(category);
         return toDTO(createdCategory);
 
@@ -42,6 +43,7 @@ public class CategoryService {
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
         categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setIconPath(category.getIconPath());
         return categoryDTO;
     }
 }

@@ -3,6 +3,7 @@ package com.example.burnttoast.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class Recipe {
     private RecipeStatus status;
     private Integer cookingTime;
     private Integer rating; // can be 1-5
+    private String thumbnailUrl;
+    private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
