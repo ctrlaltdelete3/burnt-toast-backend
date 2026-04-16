@@ -50,6 +50,7 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe not found."));
         toEntity(recipe, recipeDTO);
+        recipe.setThumbnailUrl(fetchThumbnail(recipeDTO.getUrl()));
         Recipe updatedRecipe = recipeRepository.save(recipe);
         return toDTO(updatedRecipe);
     }
