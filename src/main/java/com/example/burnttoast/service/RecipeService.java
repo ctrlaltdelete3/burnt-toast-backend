@@ -66,6 +66,7 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
     }
 
+    //TODO: NOTE - currently, search by tags is not implemented in frontend!
     public List<RecipeDTO> search(String query, Long categoryId, RecipeStatus status, Long tagId) {
         return recipeRepository.search(query, categoryId, status, tagId)
                 .stream()
