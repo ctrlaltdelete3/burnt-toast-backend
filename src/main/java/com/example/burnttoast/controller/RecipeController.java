@@ -20,7 +20,7 @@ public class RecipeController {
 
     @GetMapping("/categories/{categoryId}/recipes")
     public List<RecipeDTO> getAll(@PathVariable Long categoryId) {
-        return recipeService.getAllByCategory(categoryId);
+        return recipeService.getAllByCategoryForCurrentUser(categoryId);
     }
 
     @PostMapping("/categories/{categoryId}/recipes")

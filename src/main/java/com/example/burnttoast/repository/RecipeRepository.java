@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-    List<Recipe> findByCategoryId(Long categoryId);
+    List<Recipe> findByCategoryIdAndUserId(Long categoryId, Long userId);
 
     @Query("SELECT r FROM Recipe r " +
             "LEFT JOIN r.tags t " +

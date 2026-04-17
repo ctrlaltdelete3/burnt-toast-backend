@@ -6,8 +6,11 @@ import com.example.burnttoast.mapper.RecipeMapper;
 import com.example.burnttoast.model.Category;
 import com.example.burnttoast.model.Recipe;
 import com.example.burnttoast.model.RecipeStatus;
+import com.example.burnttoast.model.User;
 import com.example.burnttoast.repository.CategoryRepository;
 import com.example.burnttoast.repository.RecipeRepository;
+import com.example.burnttoast.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.jsoup.Jsoup;
 
@@ -22,14 +25,17 @@ import static com.example.burnttoast.mapper.RecipeMapper.toEntity;
 public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
-    public RecipeService(RecipeRepository recipeRepository, CategoryRepository categoryRepository) {
+    public RecipeService(RecipeRepository recipeRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
         this.recipeRepository = recipeRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<RecipeDTO> getAllByCategory(Long categoryId) {
-        return recipeRepository.findByCategoryId(categoryId)
+    public List<RecipeDTO> getAllByCategoryForCurrentUser(Long categoryId) {
+        var user = getCurrentlyLoggedUser();
+        return recipeRepository.findByCategoryIdAndUserId(categoryId, user.getId())
                 .stream()
                 .map(RecipeMapper::toDTO)
                 .collect(Collectors.toList());
@@ -42,6 +48,7 @@ public class RecipeService {
         recipe.setCategory(category);
         recipe.setCreatedAt(LocalDateTime.now());
         recipe.setThumbnailUrl(fetchThumbnail(recipeDTO.getUrl()));
+        recipe.setUser(getCurrentlyLoggedUser());
         Recipe createdRecipe = recipeRepository.save(recipe);
         return toDTO(createdRecipe);
     }
@@ -80,5 +87,10 @@ public class RecipeService {
         }catch(Exception e){
             return null;
         }
+    }
+
+    private User getCurrentlyLoggedUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username);
     }
 }
