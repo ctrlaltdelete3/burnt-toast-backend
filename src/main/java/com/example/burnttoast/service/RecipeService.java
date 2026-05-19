@@ -6,11 +6,9 @@ import com.example.burnttoast.mapper.RecipeMapper;
 import com.example.burnttoast.model.Category;
 import com.example.burnttoast.model.Recipe;
 import com.example.burnttoast.model.RecipeStatus;
-import com.example.burnttoast.model.User;
 import com.example.burnttoast.repository.CategoryRepository;
 import com.example.burnttoast.repository.RecipeRepository;
 import com.example.burnttoast.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.jsoup.Jsoup;
 
@@ -22,15 +20,14 @@ import static com.example.burnttoast.mapper.RecipeMapper.toDTO;
 import static com.example.burnttoast.mapper.RecipeMapper.toEntity;
 
 @Service
-public class RecipeService {
+public class RecipeService extends BaseService {
     private final RecipeRepository recipeRepository;
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
 
     public RecipeService(RecipeRepository recipeRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
+        super(userRepository);
         this.recipeRepository = recipeRepository;
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
     }
 
     public List<RecipeDTO> getAllByCategoryForCurrentUser(Long categoryId) {
@@ -88,10 +85,5 @@ public class RecipeService {
         }catch(Exception e){
             return null;
         }
-    }
-
-    private User getCurrentlyLoggedUser(){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(username);
     }
 }
