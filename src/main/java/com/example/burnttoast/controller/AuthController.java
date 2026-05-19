@@ -3,6 +3,9 @@ package com.example.burnttoast.controller;
 import com.example.burnttoast.dto.AuthRequestDTO;
 import com.example.burnttoast.dto.AuthResponseDTO;
 import com.example.burnttoast.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +25,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponseDTO login(@RequestBody AuthRequestDTO authRequestDTO){
-        return  userService.login(authRequestDTO);
+    public AuthResponseDTO login(@RequestBody AuthRequestDTO authRequestDTO, HttpServletResponse response){
+
+       var authResponse = userService.login(authRequestDTO);
+        Cookie cookie = new Cookie("refreshToken", authResponse.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60*60*24*30); //30 days - in seconds
+        return  authResponse;
     }
 }

@@ -11,7 +11,7 @@ public class BaseService {
         this.userRepository = userRepository;
     }
 
-    public User getCurrentlyLoggedUser(){
+    protected User getCurrentlyLoggedUser(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username);
     }

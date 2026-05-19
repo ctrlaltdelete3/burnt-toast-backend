@@ -1,11 +1,10 @@
 package com.example.burnttoast.service;
 
-import com.example.burnttoast.dto.RefreshTokenResponseDTO;
 import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.model.RefreshToken;
+import com.example.burnttoast.model.User;
 import com.example.burnttoast.repository.RefreshTokenRepository;
 import com.example.burnttoast.repository.UserRepository;
-import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,18 +20,13 @@ public class RefreshTokenService extends BaseService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public String generateRefreshToken() {
+    public String generateRefreshToken(User user) {
         RefreshToken refreshToken = new RefreshToken();
-        var user = getCurrentlyLoggedUser();
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found.");
-        }
         refreshToken.setRevoked(false);
         refreshToken.setUser(user);
         refreshToken.setExpiresAt(LocalDateTime.now().plusDays(30));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshTokenRepository.save(refreshToken);
-
         return refreshToken.getToken();
     }
 
@@ -48,7 +42,7 @@ public class RefreshTokenService extends BaseService {
         return !refreshToken.isRevoked() && !isTokenExpired;
     }
 
-    public String getUsernameFromRefreshToken(String token){
+    public String getUsernameFromRefreshToken(String token) {
         var refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found."));
         return refreshToken.getUser().getUsername();

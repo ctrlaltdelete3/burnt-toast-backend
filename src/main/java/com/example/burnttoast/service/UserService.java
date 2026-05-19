@@ -15,11 +15,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RefreshTokenService refreshTokenService,
+                       JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.refreshTokenService = refreshTokenService;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
@@ -49,7 +52,10 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid password.");
         }
         String token = jwtUtil.generateToken(user.getUsername());
-        return generateAuthResponseDTO(token);
+        var refreshToken = refreshTokenService.generateRefreshToken(user);
+        var response = generateAuthResponseDTO(token);
+        response.setRefreshToken(refreshToken);
+        return response;
     }
 
     private AuthResponseDTO generateAuthResponseDTO(String token){

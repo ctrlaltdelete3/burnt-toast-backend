@@ -30,7 +30,7 @@ public class RefreshTokenController {
         }
     }
 
-    @DeleteMapping("/auth/logout")
+    @PostMapping("/auth/logout")
     public void delete(@RequestBody String refreshToken){
         refreshTokenService.revokeRefreshToken(refreshToken);
     }
