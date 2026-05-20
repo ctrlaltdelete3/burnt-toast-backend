@@ -1,5 +1,6 @@
 package com.example.burnttoast.service;
 
+import com.example.burnttoast.config.JwtUtil;
 import com.example.burnttoast.exception.InvalidCredentialsException;
 import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.model.RefreshToken;
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 @Service
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
         this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public String generateRefreshToken(User user) {
@@ -39,10 +42,15 @@ public class RefreshTokenService {
         var refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found."));
         var isTokenExpired = refreshToken.getExpiresAt().isBefore(LocalDateTime.now());
+
         if (refreshToken.isRevoked() || isTokenExpired) {
             throw new InvalidCredentialsException("Refresh token is expired.");
-        } else {
-            return refreshToken.getUser().getUsername();
         }
+
+        return refreshToken.getUser().getUsername();
+    }
+
+    public String generateAccessToken(String username) {
+        return jwtUtil.generateToken(username);
     }
 }

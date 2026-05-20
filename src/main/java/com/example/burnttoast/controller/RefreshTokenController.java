@@ -1,6 +1,5 @@
 package com.example.burnttoast.controller;
 
-import com.example.burnttoast.config.JwtUtil;
 import com.example.burnttoast.dto.RefreshTokenResponseDTO;
 import com.example.burnttoast.exception.InvalidCredentialsException;
 import com.example.burnttoast.service.RefreshTokenService;
@@ -13,19 +12,18 @@ import java.util.Arrays;
 @RequestMapping("/api")
 public class RefreshTokenController {
     private final RefreshTokenService refreshTokenService;
-    private final JwtUtil jwtUtil;
 
-    public RefreshTokenController(RefreshTokenService refreshTokenService, JwtUtil jwtUtil) {
+    public RefreshTokenController(RefreshTokenService refreshTokenService) {
         this.refreshTokenService = refreshTokenService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/auth/refresh")
     public RefreshTokenResponseDTO create(HttpServletRequest request) {
         String refreshToken = getRefreshToken(request);
         var username = refreshTokenService.getUserIfRefreshTokenIsValid(refreshToken);
+        var accessToken = refreshTokenService.generateAccessToken(username);
         var response = new RefreshTokenResponseDTO();
-        response.setToken(jwtUtil.generateToken(username));
+        response.setToken(accessToken);
         return response;
     }
 
