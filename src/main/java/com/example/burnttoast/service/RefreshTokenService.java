@@ -1,10 +1,10 @@
 package com.example.burnttoast.service;
 
+import com.example.burnttoast.exception.InvalidCredentialsException;
 import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.model.RefreshToken;
 import com.example.burnttoast.model.User;
 import com.example.burnttoast.repository.RefreshTokenRepository;
-import com.example.burnttoast.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Service
-public class RefreshTokenService{
+public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
@@ -35,15 +35,14 @@ public class RefreshTokenService{
         refreshTokenRepository.save(refreshToken);
     }
 
-    public boolean checkIsRefreshTokenValid(String token) {
-        var refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new ResourceNotFoundException("Refresh token not found."));
-        var isTokenExpired = refreshToken.getExpiresAt().isBefore(LocalDateTime.now());
-        return !refreshToken.isRevoked() && !isTokenExpired;
-    }
-
-    public String getUsernameFromRefreshToken(String token) {
+    public String getUserIfRefreshTokenIsValid(String token) {
         var refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found."));
-        return refreshToken.getUser().getUsername();
+        var isTokenExpired = refreshToken.getExpiresAt().isBefore(LocalDateTime.now());
+        if (refreshToken.isRevoked() || isTokenExpired) {
+            throw new InvalidCredentialsException("Refresh token is expired.");
+        } else {
+            return refreshToken.getUser().getUsername();
+        }
     }
 }

@@ -23,15 +23,10 @@ public class RefreshTokenController {
     @PostMapping("/auth/refresh")
     public RefreshTokenResponseDTO create(HttpServletRequest request) {
         String refreshToken = getRefreshToken(request);
-        var isTokenValid = refreshTokenService.checkIsRefreshTokenValid(refreshToken);
-        if (isTokenValid) {
-            var username = refreshTokenService.getUsernameFromRefreshToken(refreshToken);
-            var response = new RefreshTokenResponseDTO();
-            response.setToken(jwtUtil.generateToken(username));
-            return response;
-        } else {
-            throw new InvalidCredentialsException("Login expired.");
-        }
+        var username = refreshTokenService.getUserIfRefreshTokenIsValid(refreshToken);
+        var response = new RefreshTokenResponseDTO();
+        response.setToken(jwtUtil.generateToken(username));
+        return response;
     }
 
     @PostMapping("/auth/logout")
@@ -40,8 +35,13 @@ public class RefreshTokenController {
         refreshTokenService.revokeRefreshToken(refreshToken);
     }
 
-    private String getRefreshToken(HttpServletRequest request){
-        return Arrays.stream(request.getCookies())
+    private String getRefreshToken(HttpServletRequest request) {
+        var cookies = request.getCookies();
+        if (cookies == null) {
+            throw new InvalidCredentialsException("Refresh token not found.");
+        }
+
+        return Arrays.stream(cookies)
                 .filter(c -> c.getName().equals("refreshToken"))
                 .findFirst()
                 .orElseThrow(() -> new InvalidCredentialsException("Refresh token not found."))
