@@ -12,11 +12,10 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Service
-public class RefreshTokenService extends BaseService {
+public class RefreshTokenService{
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
-        super(userRepository);
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 

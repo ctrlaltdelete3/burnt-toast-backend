@@ -3,6 +3,7 @@ package com.example.burnttoast.service;
 import com.example.burnttoast.config.JwtUtil;
 import com.example.burnttoast.dto.AuthRequestDTO;
 import com.example.burnttoast.dto.AuthResponseDTO;
+import com.example.burnttoast.dto.LoginResult;
 import com.example.burnttoast.exception.InvalidCredentialsException;
 import com.example.burnttoast.exception.ResourceNotFoundException;
 import com.example.burnttoast.exception.UserAlreadyExistsException;
@@ -40,10 +41,13 @@ public class UserService {
         newUser.setRole(Role.USER);
         userRepository.save(newUser);
         String token = jwtUtil.generateToken(authRequestDTO.getUsername());
-        return generateAuthResponseDTO(token);
+
+        AuthResponseDTO authResponseDTO = new AuthResponseDTO();
+        authResponseDTO.setToken(token);
+        return authResponseDTO;
     }
 
-    public AuthResponseDTO login(AuthRequestDTO authRequestDTO) {
+    public LoginResult login(AuthRequestDTO authRequestDTO) {
         User user = userRepository.findByUsername(authRequestDTO.getUsername());
         if (user == null) {
             throw new ResourceNotFoundException("User not found.");
@@ -52,15 +56,10 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid password.");
         }
         String token = jwtUtil.generateToken(user.getUsername());
-        var refreshToken = refreshTokenService.generateRefreshToken(user);
-        var response = generateAuthResponseDTO(token);
-        response.setRefreshToken(refreshToken);
-        return response;
-    }
-
-    private AuthResponseDTO generateAuthResponseDTO(String token){
-        AuthResponseDTO authResponseDTO = new AuthResponseDTO();
-        authResponseDTO.setToken(token);
-        return authResponseDTO;
+        String refreshToken = refreshTokenService.generateRefreshToken(user);
+        var loginResult = new LoginResult();
+        loginResult.setAccessToken(token);
+        loginResult.setRefreshToken(refreshToken);
+        return loginResult;
     }
 }

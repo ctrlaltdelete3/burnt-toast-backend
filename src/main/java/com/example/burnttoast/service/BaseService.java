@@ -4,6 +4,7 @@ import com.example.burnttoast.model.User;
 import com.example.burnttoast.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+//TODO: currently used only by RecipeService - maybe move helper method there
 public class BaseService {
     protected final UserRepository userRepository;
 
