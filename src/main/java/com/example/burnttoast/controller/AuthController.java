@@ -32,9 +32,10 @@ public class AuthController {
         Cookie cookie = new Cookie("refreshToken", loginResult.getRefreshToken());
 
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); //TODO: change when you enable HTTPS (currently only HTTP)
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24 * 30); //30 days - in seconds
+
         response.addCookie(cookie);
 
         AuthResponseDTO authResponseDTO = new AuthResponseDTO();
